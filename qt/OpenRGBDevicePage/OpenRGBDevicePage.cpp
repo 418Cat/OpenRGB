@@ -282,13 +282,23 @@ void Ui::OpenRGBDevicePage::on_ZoneBox_currentIndexChanged(int index)
                 \*-----------------------------------------*/
                 else if(selected_zone != -1 && selected_segment == -1)
                 {
+                    unsigned int leds_in_zone = device->zones[selected_zone].leds_count;
+
+                    if(device->zones[selected_zone].flags & ZONE_FLAG_RESIZE_EFFECTS_ONLY)
+                    {
+                        if(leds_in_zone > 1)
+                        {
+                            leds_in_zone = 1;
+                        }
+                    }
+
                     /*-------------------------------------*\
                     | If there are multiple LEDs, add the   |
                     | "Entire Zone" option to the LED box   |
                     | and enable it, otherwise there is     |
                     | only one LED so disable it            |
                     \*-------------------------------------*/
-                    if(device->zones[selected_zone].leds_count > 1)
+                    if(leds_in_zone > 1)
                     {
                         ui->LEDBox->addItem(tr("Entire Zone"));
                         ui->LEDBox->setEnabled(1);
@@ -302,7 +312,7 @@ void Ui::OpenRGBDevicePage::on_ZoneBox_currentIndexChanged(int index)
                     | Fill in the LED list with all LEDs in |
                     | the zone                              |
                     \*-------------------------------------*/
-                    for(std::size_t led_idx = 0; led_idx < device->zones[selected_zone].leds_count; led_idx++)
+                    for(std::size_t led_idx = 0; led_idx < leds_in_zone; led_idx++)
                     {
                         ui->LEDBox->addItem(device->zones[selected_zone].leds[led_idx].name.c_str());
                     }
@@ -1484,9 +1494,10 @@ void Ui::OpenRGBDevicePage::on_EditZoneButton_clicked()
             }
 
             /*-----------------------------------------*\
-            | Only allow resizing linear zones          |
+            | Only allow resizing linear zones or       |
+            | effects-only resizable zones              |
             \*-----------------------------------------*/
-            if(device->zones[selected_zone].type == ZONE_TYPE_LINEAR)
+            if((device->zones[selected_zone].type == ZONE_TYPE_LINEAR) || (device->zones[selected_zone].flags & ZONE_FLAG_RESIZE_EFFECTS_ONLY))
             {
                 OpenRGBZoneResizeDialog dlg(device, selected_zone);
 

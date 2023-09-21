@@ -114,6 +114,15 @@ typedef struct
 } led;
 
 /*------------------------------------------------------------------*\
+| Zone Flags                                                         |
+\*------------------------------------------------------------------*/
+enum
+{
+    ZONE_FLAG_RESIZE_EFFECTS_ONLY       = (1 << 0), /* Zone is resizable, but only for  */
+                                                    /* effects - treat as single LED    */
+};
+
+/*------------------------------------------------------------------*\
 | Zone Types                                                         |
 \*------------------------------------------------------------------*/
 typedef int zone_type;
@@ -161,6 +170,7 @@ typedef struct
     unsigned int            leds_max;       /* Maximum number of LEDs   */
     matrix_map_type *       matrix_map;     /* Matrix map pointer       */
 	std::vector<segment>    segments;       /* Segments in zone         */
+    unsigned int            flags;          /* Zone flags bitfield      */
 } zone;
 
 /*------------------------------------------------------------------*\
